@@ -1,85 +1,53 @@
 <script setup>
-import { RouterLink, RouterView } from "vue-router";
+import { RouterLink, useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const isActive = (to) => route.path === to ? 'bg-blue-600 text-white' : 'text-gray-200 hover:bg-gray-700'
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Stocks</RouterLink>
-        <RouterLink to="/category">Category</RouterLink>
-        <RouterLink to="/book">Book</RouterLink>
-        <RouterLink to="/user">User</RouterLink>
-        <RouterLink to="/borrow">Borrow</RouterLink>
-      </nav>
+  <aside class="h-screen w-64 bg-gray-800 text-white fixed top-0 left-0 flex flex-col shadow-lg">
+    <div class="text-center text-xl font-bold py-4 border-b border-gray-700">
+      📚 My App
     </div>
-  </header>
 
-  <RouterView />
+    <nav class="flex-1 px-4 py-6 space-y-2">
+      <RouterLink
+        to="/"
+        class="block px-4 py-2 rounded transition duration-200"
+        :class="isActive('/')"
+      >
+        📦 Stocks
+      </RouterLink>
+      <RouterLink
+        to="/category"
+        class="block px-4 py-2 rounded transition duration-200"
+        :class="isActive('/category')"
+      >
+        📂 Category
+      </RouterLink>
+      <RouterLink
+        to="/book"
+        class="block px-4 py-2 rounded transition duration-200"
+        :class="isActive('/book')"
+      >
+        📘 Book
+      </RouterLink>
+      <RouterLink
+        to="/user"
+        class="block px-4 py-2 rounded transition duration-200"
+        :class="isActive('/user')"
+      >
+        👤 User
+      </RouterLink>
+      <RouterLink
+        to="/borrow"
+        class="block px-4 py-2 rounded transition duration-200"
+        :class="isActive('/borrow')"
+      >
+        📥 Borrow
+      </RouterLink>
+    </nav>
+  </aside>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
