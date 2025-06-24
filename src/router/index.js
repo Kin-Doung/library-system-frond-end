@@ -10,7 +10,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Stock',
+      name: 'Stocks',
       component: StockViewView,
     },
     {
