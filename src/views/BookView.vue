@@ -76,3 +76,4 @@ const updateStock = (stock) => {
   alert(`Update stock: ${stock.name}`);
 };
 </script>
+
