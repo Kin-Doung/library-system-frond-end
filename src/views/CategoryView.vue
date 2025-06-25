@@ -81,22 +81,4 @@ const updateCategory = (category) => {
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-import api from "@/components/plugin/axios";
 
-const categories = ref([]);
-const loading = ref(true);
-
-onMounted(async () => {
-  try {
-    const { data } = await api.get("/category");
-    console.log("API response:", data);
-    categories.value = data;
-  } catch (err) {
-    console.error("Error fetching data:", err);
-  } finally {
-    loading.value = false;
-  }
-});
-</script>
