@@ -40,39 +40,114 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import api from '@/components/plugin/axios';
+import { ref, onMounted } from "vue";
+import api from "@/components/plugin/axios";
+import { useRouter } from "vue-router";
 
 const books = ref([]);
 const loading = ref(true);
-
-onMounted(async () => {
-  await fetchbooks()
+const error = ref(null);
+const router = useRouter();
+const showForm = ref(false);
+const isEditing = ref(false);
+const form = ref({
+  id: null,
+  name: "",
+  category: "",
 });
 
-const fetchbooks = async () => {
-  loading.value = true;
+// Fetch all books from the API
+const fetchBooks = async () => {
   try {
-    const { data } = await api.get('/books'); // Replace with your API endpoint
-    books.value = data;
+    loading.value = true;
+    const response = await api.get("/books");
+    console.log("Books response:", response.data); // Debug log
+    books.value = response.data.data || response.data;
   } catch (err) {
-    console.error('Error fetching books:', err);
+    error.value = err.response?.data?.message || "Failed to load books.";
+    console.error("Error loading books:", err);
   } finally {
     loading.value = false;
   }
 };
 
-const deleteStock = async (id) => {
+// Open form for creating a new book
+const openCreateForm = () => {
+  isEditing.value = false;
+  form.value = { id: null, name: "", category: "" };
+  error.value = null;
+  showForm.value = true;
+};
+
+// Open form for editing an existing book
+const handleEdit = (book) => {
+  isEditing.value = true;
+  form.value = {
+    id: book.id,
+    name: book.name,
+    category: book.category?.title || "",
+  };
+  error.value = null;
+  showForm.value = true;
+};
+
+// Close the form and reset state
+const closeForm = () => {
+  showForm.value = false;
+  form.value = { id: null, name: "", category: "" };
+  error.value = null;
+};
+
+// Handle form submission for create/update
+const handleSubmit = async () => {
+  if (!form.value.name.trim()) {
+    error.value = "Book name is required.";
+    return;
+  }
   try {
-    await api.delete(`/books/${id}`);
-    books.value = books.value.filter(stock => stock.id !== id);
+    const payload = {
+      name: form.value.name,
+      category: form.value.category ? { title: form.value.category } : null,
+    };
+    if (isEditing.value) {
+      if (!form.value.id) {
+        error.value = "Invalid book ID.";
+        return;
+      }
+      await api.put(`/books/${form.value.id}`, payload);
+      alert("Book updated successfully!");
+    } else {
+      await api.post("/books", payload);
+      alert("Book created successfully!");
+    }
+    await fetchBooks();
+    closeForm();
   } catch (err) {
-    console.error('Error deleting stock:', err);
+    error.value = err.response?.data?.message || "Failed to save book.";
+    console.error("Error saving book:", err);
   }
 };
 
-const updateStock = (stock) => {
-  // You can replace this alert with a modal or form
-  alert(`Update stock: ${stock.name}`);
+// Handle book deletion
+const handleDelete = async (id) => {
+  if (confirm("Are you sure you want to delete this book?")) {
+    try {
+      await api.delete(`/books/${id}`);
+      alert("Book deleted successfully!");
+      await fetchBooks();
+    } catch (err) {
+      error.value = err.response?.status === 404 ? "Book not found." : "Failed to delete book.";
+      console.error("Error deleting book:", err);
+    }
+  }
 };
+
+// Handle view action (temporary workaround since /books/:id route is missing)
+const handleView = (book) => {
+  alert(`Viewing book: ${book.name} (ID: ${book.id})`); // Fallback until route is added
+  // Alternatively, fetch and display book details in a modal (see below)
+};
+
+// Fetch books on component mount
+onMounted(fetchBooks);
 </script>
