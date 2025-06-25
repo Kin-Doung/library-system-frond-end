@@ -16,7 +16,6 @@
       >
         <div class="text-sm text-gray-400 mb-1">Stock ID</div>
         <div class="text-xl font-semibold mb-3">{{ stock.id }}</div>
-
         <div class="text-sm text-gray-400 mb-1">Name</div>
         <div class="text-lg font-medium text-indigo-600">{{ stock.name }}</div>
       </div>
