@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '@/components/plugin/axios'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 const users = ref([])
 const loading = ref(true)
-const newUser = ref({ name: '', email: '', password: '' }) // For Create
+const newUser = ref({ name: '', email: '', password: '' })
 
 onMounted(async () => {
   await fetchUsers()
@@ -17,6 +19,7 @@ const fetchUsers = async () => {
     users.value = data
   } catch (err) {
     console.error('Error fetching users:', err)
+    toast.error('Failed to load users.')
   } finally {
     loading.value = false
   }
@@ -26,9 +29,11 @@ const createUser = async () => {
   try {
     const { data } = await api.post('/user', newUser.value)
     users.value.push(data)
-    newUser.value = { name: '', email: '', password: '' } // reset form
+    newUser.value = { name: '', email: '', password: '' }
+    toast.success('User created successfully!')
   } catch (err) {
     console.error('Error creating user:', err)
+    toast.error('Failed to create user.')
   }
 }
 
@@ -36,8 +41,10 @@ const deleteUser = async (id) => {
   try {
     await api.delete(`/user/${id}`)
     users.value = users.value.filter(user => user.id !== id)
+    toast.success('User deleted successfully!')
   } catch (err) {
     console.error('Error deleting user:', err)
+    toast.error('Failed to delete user.')
   }
 }
 
@@ -52,17 +59,15 @@ const updateUser = async (user) => {
         name: updatedName,
         email: updatedEmail,
       })
-
-      users.value = users.value.map(u =>
-        u.id === user.id ? data : u
-      )
+      users.value = users.value.map(u => u.id === user.id ? data : u)
+      toast.success('User updated successfully!')
     } catch (err) {
       console.error('Error updating user:', err)
+      toast.error('Failed to update user.')
     }
   }
 }
 </script>
-
 
 <template>
   <div class="p-4">
